@@ -11,37 +11,36 @@ const urlDatabase = {
 };
 
 function generateRandomString() {
- return Math.random().toString(36).substring(2, 7);
-}
-
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
+  return Math.random().toString(36).substring(2, 7);
+ } 
+//  console.log(generateRandomString());
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
+});
+
+app.get("/", (req, res) => {
+  res.redirect('urls');
 });
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+app.post("/urls", (req, res) => {
+  // console.log('req.body from POST:', req.body);  // Log the POST request body to the console
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  //short URL is object key name; long url is the value of this key;
+  urlDatabase[shortURL] = longURL;
+  
+  res.redirect(`/urls/${shortURL}`);
 });
 
-app.get("/set", (req, res) => {
-  const a = 1;
-  res.send(`a = ${a}`);
- });
- 
- app.get("/fetch", (req, res) => {
-  res.send(`a = ${a}`);
- });
-
- app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+app.get("/u/:shortURL", (req, res) => {
+  console.log('req.body from get /u/:shortURL:',req.body);
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
 
  app.get("/urls", (req, res) => {
@@ -57,3 +56,23 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL };
   res.render("urls_show", templateVars);
 });
+
+//Test ---------------
+/* app.get("/", (req, res) => {
+  res.send("Hello!");
+});
+app.get("/hello", (req, res) => {
+  res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
+
+app.get("/set", (req, res) => {
+  const a = 1;
+  res.send(`a = ${a}`);
+ });
+ 
+ app.get("/fetch", (req, res) => {
+  res.send(`a = ${a}`);
+ });
+
+ */
+
