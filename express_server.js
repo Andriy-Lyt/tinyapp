@@ -6,7 +6,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  //  "b2xVn2": "http://www.lighthouselabs.ca",
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
@@ -20,14 +19,16 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+//home page
 app.get("/", (req, res) => {
-  res.redirect('urls');
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+//upon submitting a form at "urls/new"
 app.post("/urls", (req, res) => {
   // console.log('req.body from POST:', req.body);  // Log the POST request body to the console
   const shortURL = generateRandomString();
@@ -55,15 +56,38 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL };
+  const shortURL = req.params.shortURL;
+  // const longURL = req.body.longURL;
+  const longURL = urlDatabase[shortURL];
+  // if (URLobj) {
+  //   urlDatabase[shortURL] = longURL;
+  // }
+  const templateVars = { shortURL, longURL };
+
+  // const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL };
   res.render("urls_show", templateVars);
 });
+
+//Edit URL
+app.post("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const longURL = req.body.longURL;
+  const URLobj = urlDatabase[shortURL];
+  if (URLobj) {
+    urlDatabase[shortURL] = longURL;
+  }
+  const templateVars = { shortURL, longURL };
+  res.render("urls_show", templateVars);
+});
+
 
 //Delete URL
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
 });
+
+
 
 
 //Test ---------------
