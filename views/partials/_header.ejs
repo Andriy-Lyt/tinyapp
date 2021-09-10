@@ -1,3 +1,9 @@
+<style>
+  #logout-form > label, #login-form > input {
+    background: #fff; padding: 5px 6px; 
+    border: none; border-radius: 4px;
+  }
+</style>
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
     <a class="navbar-brand" href="/urls">TinyApp</a>
@@ -10,5 +16,20 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
+
+  <%if (!username) { %>
+      <form method="POST" action="/login" id="login-form">
+        <!-- <label for="username"></label> -->
+        <input type="text" id="username" name="username" class="mr-1" placeholder="Username">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>  
+    <% } else { %>
+      <form method="POST" action="/logout" id="logout-form">
+        <label for="logout" class="mr-1" >Logged in as: <%= username %></label>
+        <button type="submit" class="btn btn-primary">Logout</button>
+      </form>  
+      <% } %>
+
   </nav>
+
 </header>
