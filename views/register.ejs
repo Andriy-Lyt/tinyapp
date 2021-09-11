@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <style>
+      body{font-size: 16px;}
+      #reg-form {
+        max-width: 300px;
+        margin: 20px auto;
+        background-color: rgb(229, 240, 250);
+        padding: 15px;
+        border-radius: 4px;
+      }
+      #reg-form h4 {text-align: center; margin: 5px 0 20px 0;}
+      #reg-form div {margin-bottom: 10px; }
+      #reg-form input {
+        float:right;
+        padding: 4px;
+        /* height: 1rem;  */
+        outline: none;
+        border-style: solid;
+        border-color: rgb(96, 149, 199);
+        border-radius: 4px;
+        }
+      #cancel {float:right; margin-top: 20px;}
+    </style>
+  </head>
+  <body>
+  <form action="/register" method="post" id="reg-form">
+    <h4>Registration Form</h4>
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" name="email" id="email">  
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" name="password" id="password">  
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Register</button>
+    <a href="/urls" id="cancel">Cancel</a>
+  </form>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+  </body>
+</html>

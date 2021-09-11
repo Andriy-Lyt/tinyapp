@@ -12,8 +12,21 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-function generateRandomString() {
-  return Math.random().toString(36).substring(2, 7);
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
+function generateRandomString(num) {
+  return Math.random().toString(36).substring(2, num+2);
  } 
 //  console.log(generateRandomString());
 
@@ -33,7 +46,7 @@ app.get("/urls.json", (req, res) => {
 //upon submitting a form at "urls/new"
 app.post("/urls", (req, res) => {
   // console.log('req.body from POST:', req.body);  // Log the POST request body to the console
-  const shortURL = generateRandomString();
+  const shortURL = generateRandomString(5);
   const longURL = req.body.longURL;
   //short URL is object key name; long url is the value of this key;
   urlDatabase[shortURL] = longURL;
@@ -116,7 +129,30 @@ app.post("/logout", (req, res) => {
   res.redirect('/urls');
 });
 
+//display Registration form 
+app.get("/register", (req, res) => {
+  res.render("register");
+});
 
+//get data from Registration form 
+app.post("/register", (req, res) => {
+  const randId = generateRandomString(6);
+    // console.log(typeof randId );
+    // console.log("randId: "+randId);
+    // console.log("email: "+req.body.email);
+    // console.log("password: "+req.body.password);
+    // console.log("users: "+users.userRandomID.id);
+  
+  users[randId] = {
+    "id": randId,
+    "email": req.body.email,
+    "password": req.body.password
+  }
+  res.cookie("user_id", randId);
+    console.log("new user: "+users[randId].email);
+    console.log('cookie:'+req.cookies["user_id"]);  
+    res.redirect('/urls');
+});
 
 
 
