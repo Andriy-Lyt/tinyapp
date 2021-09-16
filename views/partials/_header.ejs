@@ -1,11 +1,20 @@
 <style>
   #logout-form > label, #login-form > input {
-    background: #fff; padding: 5px 6px; 
+    background: #fff; padding: 5px 7px; 
     border: none; border-radius: 4px;
   }
+  .horiz-list {
+    list-style-type: none;
+    margin: 10px 15px;
+  }
+  .horiz-list li {
+    display: inline-block;
+    margin-right: 5px;
+  }
+  .horiz-list li a {color: #fff;}
 </style>
 <header>
-  <nav class="navbar navbar-expand-md navbar-dark bg-success">
+  <nav class="navbar navbar-expand-md navbar-dark bg-info">
     <a class="navbar-brand" href="/urls">TinyApp</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -17,15 +26,16 @@
       </div>
     </div>
 
-  <%if (!username) { %>
-      <form method="POST" action="/login" id="login-form">
-        <!-- <label for="username"></label> -->
-        <input type="text" id="username" name="username" class="mr-1" placeholder="Username">
-        <button type="submit" class="btn btn-success">Submit</button>
-      </form>  
+  <% console.log("user: "+user);
+  if (!user) { %>
+    <ul class = "horiz-list">
+      <li><a href="/login">Login</a></li>
+      <li><a href="/register">Register</a></li>
+    </ul>
+      
     <% } else { %>
       <form method="POST" action="/logout" id="logout-form">
-        <label for="logout" class="mr-1" >Logged in as: <%= username %></label>
+        <label for="logout" class="mr-1" >Logged in as: <%= user.email %></label>
         <button type="submit" class="btn btn-danger">Logout</button>
       </form>  
       <% } %>

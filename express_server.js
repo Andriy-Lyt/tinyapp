@@ -25,6 +25,15 @@ const users = {
   }
 }
 
+function emailExists(email) {
+  for(let key in users) {
+    if (key["email"] === email) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function generateRandomString(num) {
   return Math.random().toString(36).substring(2, num+2);
  } 
@@ -62,11 +71,14 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
  app.get("/urls", (req, res) => {
-  const cookie = req.cookies["username"] ? req.cookies["username"] : undefined;
+  // const cookie = req.cookies["username"];
+  const userId = req.cookies["user_id"];
+  const userObj = users[userId];
   const templateVars = { 
     urls: urlDatabase, 
-    username: cookie 
+    user: userObj 
   };
+  // console.log(req.cookies);
   res.render("urls_index", templateVars);
 });
 
@@ -81,10 +93,12 @@ app.get("/urls/:shortURL", (req, res) => {
   // if (URLobj) {
   //   urlDatabase[shortURL] = longURL;
   // }
+  const userId = req.cookies["user_id"];
+  const userObj = users[userId];
   const templateVars = { 
     shortURL, 
     longURL, 
-    username: req.cookies["username"], 
+    user: userObj 
   };
 
   // const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL };
@@ -99,10 +113,13 @@ app.post("/urls/:shortURL", (req, res) => {
   if (URLobj) {
     urlDatabase[shortURL] = longURL;
   }
+
+  const userId = req.cookies["user_id"];
+  const userObj = users[userId];
   const templateVars = { 
     shortURL, 
     longURL, 
-    username: req.cookies["username"], 
+    user: userObj 
   };
   res.render("urls_show", templateVars);
 });
@@ -114,22 +131,27 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect('/urls');
 });
 
-//set a coockie
+//show login form
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+//set a cookie
 app.post("/login", (req, res) => {
-  //set a coockie
+  //set a cookie
   // console.log('usernameLogin: '+ req.body.username);
   res.cookie('username', req.body.username);
   res.redirect('/urls');
 });
 
-//clear a coockie
+//clear a cookie
 app.post("/logout", (req, res) => {
   console.log('usernameLogin: '+ req.body.username);
   res.clearCookie('username');
   res.redirect('/urls');
 });
 
-//display Registration form 
+//show Registration form 
 app.get("/register", (req, res) => {
   res.render("register");
 });
@@ -137,11 +159,17 @@ app.get("/register", (req, res) => {
 //get data from Registration form 
 app.post("/register", (req, res) => {
   const randId = generateRandomString(6);
-    // console.log(typeof randId );
-    // console.log("randId: "+randId);
-    // console.log("email: "+req.body.email);
-    // console.log("password: "+req.body.password);
-    // console.log("users: "+users.userRandomID.id);
+
+  //check for empty fields in the form
+  if (!req.body.email || !req.body.password) {
+    res.status(400);
+    res.send("Please enter both Email and Password.");
+  }
+  //check if user with such email exists
+  if (emailExists(req.body.email)) {
+    res.status(400);
+    res.send("Email already registered.");
+  }
   
   users[randId] = {
     "id": randId,

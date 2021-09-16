@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Register</title>
+    <title>Login</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <style>
       body{font-size: 16px;}
-      #reg-form {
+      #log-form {
         max-width: 300px;
         margin: 20px auto;
         background-color: rgb(229, 240, 250);
         padding: 15px;
         border-radius: 4px;
       }
-      #reg-form h4 {text-align: center; margin: 5px 0 20px 0;}
-      #reg-form div {margin-bottom: 10px; }
-      #reg-form input {
+      #log-form h4 {text-align: center; margin: 5px 0 20px 0;}
+      #log-form div {margin-bottom: 10px; }
+      #log-form input {
         float:right;
         padding: 4px;
         /* height: 1rem;  */
@@ -29,8 +29,8 @@
     </style>
   </head>
   <body>
-  <form action="/register" method="post" id="reg-form">
-    <h4>Register</h4>
+  <form action="/login" method="post" id="log-form">
+    <h4>Login</h4>
     <div>
       <label for="email">Email:</label>
       <input type="email" name="email" id="email">  
@@ -39,7 +39,7 @@
       <label for="password">Password:</label>
       <input type="password" name="password" id="password">  
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Register</button>
+    <button type="submit" class="btn btn-primary mt-2">Login</button>
     <a href="/urls" id="cancel">Cancel</a>
   </form>
 
