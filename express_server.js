@@ -6,6 +6,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 app.set("view engine", "ejs");
+const bcrypt = require('bcrypt');
 
 //popup
 const alert = require('alert');
@@ -94,6 +95,10 @@ app.get("/urls", (req, res) => {
     urls: userURLs, 
     user: userObj 
   };
+  if (userId) {
+    console.log("password: "+ users[userId].password);
+  }
+  
   // console.log(req.cookies);
   // console.log("templateVars.user: "+templateVars.user);
   res.render("urls_index", templateVars);
@@ -212,13 +217,13 @@ app.post("/login", (req, res) => {
     res.redirect('/login');
   } 
   //user not found
-  else if(!findUserIdByEmail(email)) {
+  else if (!findUserIdByEmail(email)) {
     res.status(403);
     alert('User not found');
     res.redirect('/login');
   }
   //incorrect password
-  else if(password !== findUserPasswordByEmail(email)) {
+  else if (!bcrypt.compareSync(password, findUserPasswordByEmail(email))) {
     res.status(403);
     alert('incorrect Username or Password');
     res.redirect('/login');
@@ -263,10 +268,11 @@ app.post("/register", (req, res) => {
     res.send("Email already registered.");
   }
   else {
+    const hashPassw = bcrypt.hashSync(req.body.password, 10); 
     users[randId] = {
       "id": randId,
       "email": req.body.email,
-      "password": req.body.password
+      "password": hashPassw
     }
     res.cookie("user_id", randId);
       console.log("new user: "+users[randId].email);
