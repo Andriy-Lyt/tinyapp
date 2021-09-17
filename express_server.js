@@ -7,16 +7,22 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 app.set("view engine", "ejs");
 
+//popup
+const alert = require('alert');
+// alert('Hello');
+
+// Url DB
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+//Users DB
 const users = { 
   "userRandomID": {
     id: "userRandomID", 
-    email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
+    email: "1@1.com", 
+    password: "1"
   },
  "user2RandomID": {
     id: "user2RandomID", 
@@ -25,6 +31,26 @@ const users = {
   }
 }
 
+//Helper functions --------
+//find user_id by email in database
+const findUserIdByEmail = (email) => {
+  for(let key in users) {
+    if (users[key]["email"] === email) {
+      return users[key]["id"];
+    }
+  }
+}
+
+//find user password by email in database
+const findUserPasswordByEmail = (email) => {
+  for(let key in users) {
+    if (users[key]["email"] === email) {
+      return users[key]["password"];
+    }
+  }
+}
+
+//check if the user with provided email exists in database
 function emailExists(email) {
   for(let key in users) {
     if (key["email"] === email) {
@@ -33,7 +59,7 @@ function emailExists(email) {
   }
   return false;
 }
-
+//generate random string
 function generateRandomString(num) {
   return Math.random().toString(36).substring(2, num+2);
  } 
@@ -43,10 +69,24 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-//home page
+//home page --------
 app.get("/", (req, res) => {
   res.redirect("/urls");
 });
+
+app.get("/urls", (req, res) => {
+  const userId = req.cookies["user_id"];
+  const userObj = users[userId];
+  const templateVars = { 
+    urls: urlDatabase, 
+    user: userObj 
+  };
+  // console.log(req.cookies);
+  console.log("templateVars.user: "+templateVars.user);
+  
+  res.render("urls_index", templateVars);
+});
+
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -67,23 +107,23 @@ app.post("/urls", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   // console.log('req.body from get /u/:shortURL:',req.body);
   const longURL = urlDatabase[req.params.shortURL];
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+  const templateVars = { 
+    user: user
+  };
+
   res.redirect(longURL);
 });
 
- app.get("/urls", (req, res) => {
-  // const cookie = req.cookies["username"];
-  const userId = req.cookies["user_id"];
-  const userObj = users[userId];
-  const templateVars = { 
-    urls: urlDatabase, 
-    user: userObj 
-  };
-  // console.log(req.cookies);
-  res.render("urls_index", templateVars);
-});
-
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+  const templateVars = { 
+    user: user
+  };
+
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -124,7 +164,6 @@ app.post("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-
 //Delete URL
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
@@ -133,53 +172,89 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //show login form
 app.get("/login", (req, res) => {
-  res.render("login");
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+  const templateVars = { 
+    user: user
+  };
+
+  res.render("login", templateVars);
 });
 
-//set a cookie
+//process login form
 app.post("/login", (req, res) => {
-  //set a cookie
-  // console.log('usernameLogin: '+ req.body.username);
-  res.cookie('username', req.body.username);
-  res.redirect('/urls');
+  const email = req.body.email;
+  const password = req.body.password;
+  let userId;
+
+  //validate data entered into a form
+  //entered empty string
+  if (!email || !password) {
+    alert('Please enter correct Email and Password');
+    res.redirect('/login');
+  } 
+  //user not found
+  else if(!findUserIdByEmail(email)) {
+    res.status(403);
+    alert('User not found');
+    res.redirect('/login');
+  }
+  //incorrect password
+  else if(password !== findUserPasswordByEmail(email)) {
+    res.status(403);
+    alert('incorrect Username or Password');
+    res.redirect('/login');
+  } 
+  //correct email and password, set cookie "user_id"
+  else {
+    userId = findUserIdByEmail(email);
+    res.cookie('user_id', userId);
+    res.redirect('/urls');
+  }
 });
 
-//clear a cookie
+//clear a cookie on logout
 app.post("/logout", (req, res) => {
-  console.log('usernameLogin: '+ req.body.username);
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 
 //show Registration form 
 app.get("/register", (req, res) => {
-  res.render("register");
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+  const templateVars = { 
+    user: user
+  };
+
+  res.render("register", templateVars);
 });
 
-//get data from Registration form 
+//process data from Registration form 
 app.post("/register", (req, res) => {
   const randId = generateRandomString(6);
 
   //check for empty fields in the form
   if (!req.body.email || !req.body.password) {
     res.status(400);
-    res.send("Please enter both Email and Password.");
+    alert('Please enter both Email and Password.');
   }
   //check if user with such email exists
-  if (emailExists(req.body.email)) {
+  else if (emailExists(req.body.email)) {
     res.status(400);
     res.send("Email already registered.");
   }
-  
-  users[randId] = {
-    "id": randId,
-    "email": req.body.email,
-    "password": req.body.password
+  else {
+    users[randId] = {
+      "id": randId,
+      "email": req.body.email,
+      "password": req.body.password
+    }
+    res.cookie("user_id", randId);
+      console.log("new user: "+users[randId].email);
+      console.log('cookie:'+req.cookies["user_id"]);  
+      res.redirect('/urls');
   }
-  res.cookie("user_id", randId);
-    console.log("new user: "+users[randId].email);
-    console.log('cookie:'+req.cookies["user_id"]);  
-    res.redirect('/urls');
 });
 
 
