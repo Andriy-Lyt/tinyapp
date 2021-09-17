@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
+const{findUserIdByEmail, findUserPasswordByEmail, emailExists, 
+  generateRandomString, urlsForUser} = require('./helpers.js');
+
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -42,50 +45,6 @@ const users = {
   }
 }
 
-//Helper functions --------
-//find user_id by email in database
-const findUserIdByEmail = (email) => {
-  for(let key in users) {
-    if (users[key]["email"] === email) {
-      return users[key]["id"];
-    }
-  }
-}
-
-//find user password by email in database
-const findUserPasswordByEmail = (email) => {
-  for(let key in users) {
-    if (users[key]["email"] === email) {
-      return users[key]["password"];
-    }
-  }
-}
-
-//check if the user with provided email exists in database
-function emailExists(email) {
-  for(let key in users) {
-    if (key["email"] === email) {
-      return true;
-    }
-  }
-  return false;
-}
-//generate random string
-function generateRandomString(num) {
-  return Math.random().toString(36).substring(2, num+2);
- } 
- //  console.log(generateRandomString());
-
- //find URLs that belong to the particular User
- function urlsForUser(id) {
-   userURLs = {};
-   for(let key in urlDatabase) {
-     if (urlDatabase[key].userID == id) {
-      userURLs[key] = urlDatabase[key].longURL;
-     }
-   }
-   return userURLs;
- }
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
@@ -99,15 +58,12 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const userId = req.session.user_id;
   const userObj = users[userId];
-  const userURLs = urlsForUser(userId);  
+  const userURLs = urlsForUser(userId, urlDatabase);  
 
   const templateVars = { 
     urls: userURLs, 
     user: userObj 
   };
-  if (userId) {
-    console.log("password: "+ users[userId].password);
-  }
   res.render("urls_index", templateVars);
 });
 
@@ -224,20 +180,20 @@ app.post("/login", (req, res) => {
     res.redirect('/login');
   } 
   //user not found
-  else if (!findUserIdByEmail(email)) {
+  else if (!findUserIdByEmail(email, users)) {
     res.status(403);
     alert('User not found');
     res.redirect('/login');
   }
   //incorrect password
-  else if (!bcrypt.compareSync(password, findUserPasswordByEmail(email))) {
+  else if (!bcrypt.compareSync(password, findUserPasswordByEmail(email, users))) {
     res.status(403);
     alert('incorrect Username or Password');
     res.redirect('/login');
   } 
   //correct email and password, set cookie "user_id"
   else {
-    userId = findUserIdByEmail(email);
+    userId = findUserIdByEmail(email, users);
     req.session.user_id = userId;
     res.redirect('/urls');
   }
@@ -270,7 +226,7 @@ app.post("/register", (req, res) => {
     alert('Please enter both Email and Password.');
   }
   //check if user with such email exists
-  else if (emailExists(req.body.email)) {
+  else if (emailExists(req.body.email, users)) {
     res.status(400);
     res.send("Email already registered.");
   }
