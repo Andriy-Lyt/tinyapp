@@ -88,7 +88,6 @@ app.post("/urls", (req, res) => {
 
 //Redirect to LongURL when clicking on ShortURL
 app.get("/u/:shortURL", (req, res) => {
-  // console.log('req.body from get /u/:shortURL:',req.body);
   const longURL = urlDatabase[req.params.shortURL].longURL;
   console.log("longURL: "+longURL);
   
@@ -113,7 +112,6 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  // const longURL = req.body.longURL;
   const longURL = urlDatabase[shortURL].longURL;
   const userId = req.session.user_id;
   const userObj = users[userId];
@@ -122,7 +120,6 @@ app.get("/urls/:shortURL", (req, res) => {
     longURL, 
     user: userObj 
   };
-  // const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL };
   res.render("urls_show", templateVars);
 });
 
