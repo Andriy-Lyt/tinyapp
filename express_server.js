@@ -90,7 +90,7 @@ app.get("/u/:shortURL", (req, res) => {
   let ermessage = "";
 
   if (!urlDatabase[shortURL]) { ermessage = "Short URL does not exist"; }
-  if (urlDatabase[shortURL]["userID"] != userId) { ermessage = "Short URL does not belong to you"; }
+  if (urlDatabase[shortURL]["userID"] != userId) { ermessage = "Short URL does not belong to You"; }
 
   const templateVars = { 
     "user": user,
@@ -126,7 +126,7 @@ app.get("/urls/:shortURL", (req, res) => {
   if (!urlDatabase[shortURL]) { ermessage = "Short URL does not exist"; }
 
   if(urlDatabase[shortURL]) {
-    if (urlDatabase[shortURL]["userID"] != userId) { ermessage = "Short URL does not belong to you"; }
+    if (urlDatabase[shortURL]["userID"] != userId) { ermessage = "Short URL does not belong to You"; }
   }
 
   const templateVars = { 
