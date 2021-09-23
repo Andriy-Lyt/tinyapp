@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+      html, body {
+      height: 98%;
+    }
+
+    body {
+      /* border: 1px solid green; */
+      font-family: Arial, Helvetica, sans-serif;
+      width:50%;
+      margin: 30px auto 20px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .content {
+      flex: 1 0 auto;
+    }
+    footer {
+      flex-shrink: 0;
+    }
+    .pink {
+      color:rgb(187, 28, 166);
+    }
+    .blue {
+      color:rgb(49, 71, 190);
+    }
+    #attrib {
+      font-size: 12px;
+    }
+    .image {
+      width:400px;
+      border-radius: 5px;
+      animation: sway 3s alternate infinite ease-in-out ;
+    }
+    @keyframes sway {
+      from {transform: rotate(-3deg);}
+      to {transform: rotate(3deg);}
+    }
+  </style>
+</head>
+
+<body>  
+  <div class="content">
+    <h2 class="pink">Oopsy...</h2>
+    <h3 class="blue"><%= ermessage %> &#129300;</h3>
+    <p><a href="/urls">Back to Home page</a></p>
+    <br>
+    <img class="image" src="https://webelf.ca/images/404.jpg" alt="404 error, no page found" />
+  </div>
+  
+  <footer>
+    <a id="attrib" href="https://www.freepik.com/vectors/business">Business vector created by pikisuperstar - www.freepik.com</a>
+  </footer>
+</body>
+</html>

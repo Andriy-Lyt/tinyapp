@@ -18,6 +18,7 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 
+
 app.set("view engine", "ejs");
 const bcrypt = require('bcrypt');
 
@@ -45,11 +46,6 @@ const users = {
   }
 }
 
-
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
-
 //home page -----------
 app.get("/", (req, res) => {
   res.redirect("/urls");
@@ -74,7 +70,6 @@ app.get("/urls.json", (req, res) => {
 
 //upon submitting a form at "urls/new"
 app.post("/urls", (req, res) => {
-  // console.log('req.body from POST:', req.body);  // Log the POST request body to the console
   const shortURL = generateRandomString(5);
   const longURL = req.body.longURL;
 
@@ -88,15 +83,25 @@ app.post("/urls", (req, res) => {
 
 //Redirect to LongURL when clicking on ShortURL
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  console.log("longURL: "+longURL);
-  
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL].longURL;
   const userId = req.session.user_id;
   const user = users[userId];
+  let ermessage = "";
+
+  if (!urlDatabase[shortURL]) { ermessage = "Short URL does not exist"; }
+  if (urlDatabase[shortURL]["userID"] != userId) { ermessage = "Short URL does not belong to you"; }
+
   const templateVars = { 
-    user: user
-  };
-  res.redirect(longURL);
+    "user": user,
+    "ermessage": ermessage
+  };  
+
+  if (ermessage) {
+    res.render("nopage", templateVars);
+  } else {
+    res.redirect(longURL);
+  }
 });
 
 app.get("/urls/new", (req, res) => {
@@ -112,15 +117,31 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL].longURL;
+  const longURL = urlDatabase[shortURL] ? urlDatabase[shortURL].longURL : null;
   const userId = req.session.user_id;
   const userObj = users[userId];
+  const user = users[userId];
+  let ermessage = "";
+
+  if (!urlDatabase[shortURL]) { ermessage = "Short URL does not exist"; }
+
+  if(urlDatabase[shortURL]) {
+    if (urlDatabase[shortURL]["userID"] != userId) { ermessage = "Short URL does not belong to you"; }
+  }
+
   const templateVars = { 
+    "user": user,
+    "ermessage": ermessage,
     shortURL, 
     longURL, 
     user: userObj 
   };
-  res.render("urls_show", templateVars);
+
+  if (ermessage) {
+    res.render("nopage", templateVars);
+  } else {
+    res.render("urls_show", templateVars);
+  }
 });
 
 //Edit URL ----------
@@ -139,7 +160,7 @@ app.post("/urls/:shortURL", (req, res) => {
     longURL, 
     user: userObj 
   };
-  res.render("urls_show", templateVars);
+  res.redirect('/urls');
 });
 
 //Delete URL from DB --------
@@ -222,7 +243,7 @@ app.post("/register", (req, res) => {
     res.status(400);
     alert('Please enter both Email and Password.');
   }
-  //check if user with such email exists
+  //check if the user with such email exists
   else if (emailExists(req.body.email, users)) {
     res.status(400);
     res.send("Email already registered.");
@@ -238,3 +259,22 @@ app.post("/register", (req, res) => {
       res.redirect('/urls');
   }
 });
+
+//non-existent page 
+app.get("/*", (req, res) => {
+  const userId = req.session.user_id;
+  const user = users[userId];
+  const templateVars = { 
+    user: user,
+    ermessage: "Requested page does not exist"
+  };
+  res.render("nopage", templateVars);
+});
+
+
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}!`);
+});
+
+
+

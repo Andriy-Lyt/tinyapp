@@ -30,7 +30,6 @@ function emailExists(email, db) {
 function generateRandomString(num) {
   return Math.random().toString(36).substring(2, num+2);
  } 
- //  console.log(generateRandomString());
 
  //find URLs that belong to the particular User
  function urlsForUser(id, db) {
