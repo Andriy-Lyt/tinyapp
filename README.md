@@ -24,9 +24,9 @@ This app also has Login / Register functionality using encrypted cookie sessions
 
 ## Final Product
 
-!["Screenshot of the app home page](https://github.com/Andriy-Lyt/tinyapp/blob/master/docs/home-page.jpg?raw=true)
+!["Screenshot of the app home page"](https://github.com/Andriy-Lyt/tinyapp/blob/master/docs/home-page.jpg?raw=true)
 
-!["Screenshot of the create shortened URL page](https://github.com/Andriy-Lyt/tinyapp/blob/master/docs/create-shortened-url.jpg?raw=true)
+!["Screenshot of the create shortened URL page"](https://github.com/Andriy-Lyt/tinyapp/blob/master/docs/create-shortened-url.jpg?raw=true)
 
 
 
